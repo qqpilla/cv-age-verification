@@ -10,9 +10,10 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class FaceDetector:
     def __init__(self, model_path):
         self.model = models.resnet18(weights=None)
+        num_ftrs = self.model.fc.in_features
         self.model.fc = nn.Sequential(
             nn.Dropout(0.2),
-            nn.Linear(512, 4),
+            nn.Linear(num_ftrs, 4),
             nn.Sigmoid()
         )
         

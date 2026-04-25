@@ -5,6 +5,7 @@ function App() {
   const [msg, setMsg] = useState("Загрузка...")
   const [selectedFile, setSelectedFile] = useState(null)
   const [faceImage, setFaceImage] = useState(null)
+  const [ageInfo, setAgeInfo] = useState(null)
 
   useEffect(() => {
     fetch("/api/hello")
@@ -23,6 +24,7 @@ function App() {
     
     setSelectedFile(event.target.files[0])
     setFaceImage(null)
+    setAgeInfo(null)
   }
 
   const handleSubmit = async () => {
@@ -35,16 +37,19 @@ function App() {
     formData.append("file", selectedFile)
 
     try {
-      const response = await fetch("/api/detect-face", {
+      const response = await fetch("/api/estimate-age", {
         method: "POST",
         body: formData
       }) 
 
       if (!response.ok) throw new Error("Ошибка при обработке изображения")
-
-      const imageBlob = await response.blob()
-      const imageUrl = URL.createObjectURL(imageBlob)
-      setFaceImage(imageUrl)
+    
+      const data = await response.json();
+      setFaceImage(data.face_image); 
+      setAgeInfo({
+        mean: data.age_mean,
+        variance: data.age_variance
+      });
     } catch (error) {
       console.error("Ошибка:", error)
     }
@@ -65,8 +70,9 @@ function App() {
         >
           Подтвердить
         </button>
-        {faceImage && (
+        {faceImage && ageInfo && (
           <div style={{ textAlign: 'center' }}>
+            <p>Предсказанный возраст: {ageInfo.mean} ± {ageInfo.variance} лет</p>
             <p>Результат детекции:</p>
             <img 
               src={faceImage} 

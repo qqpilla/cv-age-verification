@@ -2,7 +2,9 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from face_detector import FaceDetector
+from age_estimator import AgeEstimator
 import io
+import base64
 
 app = FastAPI()
 # Без этого браузер заблокирует запросы от Vite к Python-серверу
@@ -15,18 +17,28 @@ app.add_middleware(
 )
 
 face_detector = FaceDetector("weights/face_detection.pth")
-@app.post("/detect-face")
-async def detect_face(file: UploadFile = File(...)):
+age_estimator = AgeEstimator("weights/age_estimation.pth")
+
+@app.post("/estimate-age")
+async def estimate_age(file: UploadFile = File(...)):
     image_bytes = await file.read()
     
-    face_img = face_detector.crop_face(image_bytes)
-    
-    # Сохраняем вырезанное лицо в буфер, чтобы отправить обратно как файл
+    face_pil_img = face_detector.crop_face(image_bytes)
+    mean_age, variance = age_estimator.predict_age(face_pil_img)
+
+    # Упаковываем картинку в Base64 для передачи в JSON
     img_io = io.BytesIO()
-    face_img.save(img_io, 'JPEG', quality=95)
-    img_io.seek(0)
+    face_pil_img.save(img_io, format='JPEG', quality=95)
+    img_encoded = base64.b64encode(img_io.getvalue()).decode("utf-8")
     
-    return StreamingResponse(img_io, media_type="image/jpeg")
+    img_data_url = f"data:image/jpeg;base64,{img_encoded}"
+    
+    return {
+        "face_image": img_data_url,
+        "age_mean": round(mean_age, 2),
+        "age_variance": round(variance, 2)
+    }
+
 
 @app.get("/hello")
 def get_hello():
