@@ -1,90 +1,86 @@
-import { useState, useEffect } from 'react'
-import './App.css'
+import { useState } from 'react';
+import WebcamCapture from './WebcamCapture';
+import './App.css';
 
 function App() {
-  const [msg, setMsg] = useState("Загрузка...")
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [faceImage, setFaceImage] = useState(null)
-  const [ageInfo, setAgeInfo] = useState(null)
+  const [photoBlob, setPhotoBlob] = useState(null);
+  const [faceImage, setFaceImage] = useState(null);
+  const [ageInfo, setAgeInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/hello")
-      .then(response => response.json())
-      .then(data => setMsg(data.message))
-      .catch(error => {
-        console.error("Ошибка:", error)
-        setMsg("Ответ от сервера не получен")
-      })
-  })
+  const handlePhotoReady = (blob) => {
+    setPhotoBlob(blob);
+  };
 
-  const handleFileChange = (event) => {
-    if (faceImage) {
-      URL.revokeObjectURL(faceImage)
-    }
-    
-    setSelectedFile(event.target.files[0])
-    setFaceImage(null)
-    setAgeInfo(null)
-  }
+  const handleClear = () => {
+    setPhotoBlob(null);
+    setFaceImage(null);
+    setAgeInfo(null);
+  };
 
   const handleSubmit = async () => {
-    if (!selectedFile) {
-      alert("Сначала выберите файл")
-      return
-    }
+    if (!photoBlob) return;
+    setIsLoading(true);
 
-    const formData = new FormData()
-    formData.append("file", selectedFile)
+    const formData = new FormData();
+    formData.append('file', photoBlob, 'webcam.jpg');
 
     try {
-      const response = await fetch("/api/estimate-age", {
-        method: "POST",
-        body: formData
-      }) 
+      const response = await fetch('/api/estimate-age', {
+        method: 'POST',
+        body: formData,
+      });
 
-      if (!response.ok) throw new Error("Ошибка при обработке изображения")
-    
+      if (!response.ok) throw new Error('Ошибка при обработке изображения');
+
       const data = await response.json();
-      setFaceImage(data.face_image); 
+      setFaceImage(data.face_image);
       setAgeInfo({
         mean: data.age_mean,
-        variance: data.age_std
+        std: data.age_std
       });
+
     } catch (error) {
-      console.error("Ошибка:", error)
+      console.error("Ошибка:", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
-    <>
-      <section id="center">
-        <div>
-          <p>Сообщение от сервера: {msg}</p>
-          <p>Выберите изображение:</p>
-        </div>
-        <input type="file" accept="image/*" onChange={handleFileChange}/>
-        <button
-          className="counter"
-          onClick={handleSubmit}
-          disabled={!selectedFile}
-        >
-          Подтвердить
-        </button>
-        {faceImage && ageInfo && (
-          <div style={{ textAlign: 'center' }}>
-            <p>Предсказанный возраст: {ageInfo.mean} ± {ageInfo.variance} лет</p>
-            <p>Результат детекции:</p>
-            <img 
-              src={faceImage} 
-              alt="Вырезанное лицо" 
-              style={{ maxWidth: '100%' }} 
-            />
-          </div>
-        )}
-      </section>
+    <div className="app-container">
+      <h1>Анализатор возраста</h1>
+      
+      <WebcamCapture 
+        onPhotoCaptured={handlePhotoReady} 
+        onClear={handleClear} 
+      />
 
-    </>
-  )
+      {photoBlob && !faceImage && (
+        <button 
+          className="submit-button"
+          onClick={handleSubmit} 
+          disabled={isLoading}
+        >
+          {isLoading ? 'Анализ...' : 'Подтвердить и отправить'}
+        </button>
+      )}
+
+      {faceImage && ageInfo && (
+        <div className="result-container">
+          <h3>Результат:</h3>
+          <img 
+            className="result-face-img"
+            src={faceImage} 
+            alt="Face" 
+          />
+          <div className="result-age-text">
+            {ageInfo.mean} ± {ageInfo.std} лет
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default App

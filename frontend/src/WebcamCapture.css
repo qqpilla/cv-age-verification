@@ -1,0 +1,39 @@
+.webcam-container {
+    margin-bottom: 20px;
+    border: 1px solid #444;
+    padding: 20px;
+    border-radius: 12px;
+    background: #1e1e1e;
+}
+
+.webcam-canvas {
+    display: none;
+}
+
+.webcam-view-area {
+    margin-bottom: 15px;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Общий стиль для видео и фото-превью */
+.webcam-media {
+    width: 100%;
+    max-width: 500px;
+    transform: scaleX(-1);
+}
+
+.webcam-placeholder {
+    color: #888;
+}
+
+.webcam-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
