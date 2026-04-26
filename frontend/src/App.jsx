@@ -48,7 +48,7 @@ function App() {
       setFaceImage(data.face_image); 
       setAgeInfo({
         mean: data.age_mean,
-        variance: data.age_variance
+        variance: data.age_std
       });
     } catch (error) {
       console.error("Ошибка:", error)

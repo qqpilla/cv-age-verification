@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import models, transforms
+import math
 
 MIN_AGE = 5
 MAX_AGE = 90
@@ -43,5 +44,20 @@ class AgeEstimator:
             expected_age = torch.sum(probs * self.ages).item()
             # Вычисляем дисперсию
             variance = torch.sum(probs * (self.ages - expected_age)**2).item()
+            # Вычисляем среднеквадратичное отклонение
+            std = math.sqrt(variance)
 
-        return expected_age, variance
+            print_debug_probs(probs)
+
+        return expected_age, std
+    
+def print_debug_probs(probs):
+    probs_list = probs.cpu().tolist()
+    
+    print("\n[DEBUG: AGE PROBABILITIES]")
+    for idx, p in enumerate(probs_list):
+        age = idx + MIN_AGE
+        # Рисуем полоску из символов #
+        bar = "#" * int(p * 100)
+        print(f"Age {age:3}: {p*100:5.2f}% | {bar}")
+    print("-" * 40)

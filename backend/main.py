@@ -24,7 +24,7 @@ async def estimate_age(file: UploadFile = File(...)):
     image_bytes = await file.read()
     
     face_pil_img = face_detector.crop_face(image_bytes)
-    mean_age, variance = age_estimator.predict_age(face_pil_img)
+    mean_age, std_age = age_estimator.predict_age(face_pil_img)
 
     # Упаковываем картинку в Base64 для передачи в JSON
     img_io = io.BytesIO()
@@ -36,7 +36,7 @@ async def estimate_age(file: UploadFile = File(...)):
     return {
         "face_image": img_data_url,
         "age_mean": round(mean_age, 2),
-        "age_variance": round(variance, 2)
+        "age_std": round(std_age, 2)
     }
 
 
