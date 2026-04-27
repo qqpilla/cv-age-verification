@@ -1,86 +1,43 @@
-import { useState } from 'react';
-import WebcamCapture from './WebcamCapture';
-import './App.css';
+import { useState } from 'react'
+import AgeVerification from './AgeVerification'
+import ProductsList from './ProductsList'
+import './App.css'
 
 function App() {
-  const [photoBlob, setPhotoBlob] = useState(null);
-  const [faceImage, setFaceImage] = useState(null);
-  const [ageInfo, setAgeInfo] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handlePhotoReady = (blob) => {
-    setPhotoBlob(blob);
-  };
-
-  const handleClear = () => {
-    setPhotoBlob(null);
-    setFaceImage(null);
-    setAgeInfo(null);
-  };
-
-  const handleSubmit = async () => {
-    if (!photoBlob) return;
-    setIsLoading(true);
-
-    const formData = new FormData();
-    formData.append('file', photoBlob, 'webcam.jpg');
-
-    try {
-      const response = await fetch('/api/estimate-age', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) throw new Error('Ошибка при обработке изображения');
-
-      const data = await response.json();
-      setFaceImage(data.face_image);
-      setAgeInfo({
-        mean: data.age_mean,
-        std: data.age_std
-      });
-
-    } catch (error) {
-      console.error("Ошибка:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const [isProductsSelected, setIsProductsSelected] = useState(false)
+  const [showVerificationPhase, setShowVerificationPhase] = useState(false)
 
   return (
-    <div className="app-container">
-      <h1>Анализатор возраста</h1>
-      
-      <WebcamCapture 
-        onPhotoCaptured={handlePhotoReady} 
-        onClear={handleClear} 
-      />
+    <div className="app-layout">
+      {!showVerificationPhase ? (
+        <>
+          <ProductsList onSelectionChange={setIsProductsSelected} />
+          
+          {isProductsSelected && (
+            <div className="bottom-action-bar">
+              <button 
+                className="confirm-age-button"
+                onClick={() => setShowVerificationPhase(true)}
+              >
+                Подтвердить возраст
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="verification-screen">
+          <button 
+            className="back-button" 
+            onClick={() => setShowVerificationPhase(false)}
+          >
+            ← Назад к товарам
+          </button>
 
-      {photoBlob && !faceImage && (
-        <button 
-          className="submit-button"
-          onClick={handleSubmit} 
-          disabled={isLoading}
-        >
-          {isLoading ? 'Анализ...' : 'Подтвердить и отправить'}
-        </button>
-      )}
-
-      {faceImage && ageInfo && (
-        <div className="result-container">
-          <h3>Результат:</h3>
-          <img 
-            className="result-face-img"
-            src={faceImage} 
-            alt="Face" 
-          />
-          <div className="result-age-text">
-            {ageInfo.mean} ± {ageInfo.std} лет
-          </div>
+          <AgeVerification />
         </div>
       )}
     </div>
-  );
+  )
 }
 
 export default App

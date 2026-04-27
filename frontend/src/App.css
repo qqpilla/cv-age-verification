@@ -1,48 +1,62 @@
-.app-container {
-    padding: 40px;
-    color: white;
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #e6f0f9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.submit-button {
-    background-color: #4CAF50;
-    padding: 10px 25px;
-    font-size: 1.1em;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.app-layout {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.submit-button:hover {
-    background-color: #45a049;
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 0;
+  background: linear-gradient(to top, rgba(230, 240, 249, 1) 50%, rgba(230, 240, 249, 0));
+  display: flex;
+  justify-content: center;
+  z-index: 100;
 }
 
-.submit-button:disabled {
-    background-color: #777;
-    cursor: not-allowed;
+.confirm-age-button {
+  background-color: #424e53;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 20px 60px;
+  font-size: 1.5em;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: background-color 0.2s;
 }
 
-.result-container {
-    margin-top: 30px;
-    padding: 20px;
-    border: 1px solid #4CAF50;
-    border-radius: 12px;
-    background-color: rgba(76, 175, 80, 0.1);
+.confirm-age-button:active {
+  background-color: #2c3437;
+  transform: translateY(2px);
 }
 
-.result-face-img {
-    width: 200px;
-    border-radius: 8px;
-    transform: scaleX(-1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+.verification-screen {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.result-age-text {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-top: 10px;
+.back-button {
+  align-self: flex-start;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px solid #424e53;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #424e53;
 }
