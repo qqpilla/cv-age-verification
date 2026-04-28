@@ -32,8 +32,16 @@
 .webcam-media {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+}
+
+video.webcam-media {
+  object-fit: cover; 
   transform: scaleX(-1);
+}
+
+img.webcam-media {
+  object-fit: contain;
+  background-color: #f0f4f8;
 }
 
 .webcam-placeholder {
