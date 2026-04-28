@@ -7,6 +7,11 @@ function App() {
   const [isProductsSelected, setIsProductsSelected] = useState(false)
   const [showVerificationPhase, setShowVerificationPhase] = useState(false)
 
+  const showProducts = () => {
+    setIsProductsSelected(false)
+    setShowVerificationPhase(false)
+  }
+
   return (
     <div className="app-layout">
       {!showVerificationPhase ? (
@@ -28,12 +33,12 @@ function App() {
         <div className="verification-screen">
           <button 
             className="back-button" 
-            onClick={() => setShowVerificationPhase(false)}
+            onClick={() => showProducts()}
           >
             ← Назад к товарам
           </button>
 
-          <AgeVerification />
+          <AgeVerification onComplete={showProducts} />
         </div>
       )}
     </div>

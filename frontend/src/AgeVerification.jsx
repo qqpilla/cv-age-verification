@@ -2,7 +2,7 @@ import { useState } from 'react'
 import WebcamCapture from './WebcamCapture'
 import './AgeVerification.css'
 
-function AgeVerification() {
+function AgeVerification({ onComplete }) {
   const [faceImage, setFaceImage] = useState(null)
   const [ageInfo, setAgeInfo] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -34,7 +34,9 @@ function AgeVerification() {
       setFaceImage(data.face_image)
       setAgeInfo({
         mean: data.age_mean,
-        std: data.age_std
+        std: data.age_std,
+        confidence: data.confidence_adult,
+        purchase_allowed: data.purchase_allowed
       })
 
     } catch (error) {
@@ -64,7 +66,7 @@ function AgeVerification() {
 
       {faceImage && ageInfo && (
         <div className="result-container-centered">
-          <div className="result-card">
+          <div className={`result-card ${ageInfo.purchase_allowed ? 'status-allowed' : 'status-denied'}`}>
             <h3>Результат анализа:</h3>
             <img 
               className="result-face-img"
@@ -72,12 +74,26 @@ function AgeVerification() {
               alt="Face" 
             />
             <div className="result-age-text">
-              {ageInfo.mean} ± {ageInfo.std} лет
+              <p>
+                {ageInfo.mean} ± {ageInfo.std} лет<br />
+                Уверенность в совершеннолетии: {(ageInfo.confidence * 100)}% 
+              </p>
             </div>
             
-            <button className="retake-button" onClick={handleClear}>
-              Переснять фото
-            </button>
+            <div className="result-actions">
+              {ageInfo.purchase_allowed ? (
+                <button 
+                  className="retake-button" 
+                  onClick={onComplete}
+                >
+                  Завершить покупки
+                </button>
+              ) : (
+                <button className="retake-button" onClick={handleClear}>
+                  Переснять фото
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

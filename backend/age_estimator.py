@@ -7,6 +7,10 @@ import math
 MIN_AGE = 5
 MAX_AGE = 90
 NUM_CLASSES = MAX_AGE - MIN_AGE + 1
+
+AGE_THRESHOLD = 18
+CONFIDENCE_THRESHOLD = 0.95
+
 IMG_SIZE = 200
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -47,9 +51,18 @@ class AgeEstimator:
             # Вычисляем среднеквадратичное отклонение
             std = math.sqrt(variance)
 
-            print_debug_probs(probs)
+            # Вычисляем уверенность модели в том, что человеку >= AGE_THRESHOLD лет
+            adult_mask = self.ages >= AGE_THRESHOLD
+            confidence_adult = torch.sum(probs[adult_mask]).item()
+            
+            purchase_allowed = confidence_adult >= CONFIDENCE_THRESHOLD
 
-        return expected_age, std
+        return {
+            "expected_age": expected_age, 
+            "std": std, 
+            "confidence_adult": confidence_adult,
+            "purchase_allowed": purchase_allowed
+        }
     
 def print_debug_probs(probs):
     probs_list = probs.cpu().tolist()

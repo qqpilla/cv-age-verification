@@ -24,7 +24,7 @@ async def estimate_age(file: UploadFile = File(...)):
     image_bytes = await file.read()
     
     face_pil_img = face_detector.crop_face(image_bytes)
-    mean_age, std_age = age_estimator.predict_age(face_pil_img)
+    age_info = age_estimator.predict_age(face_pil_img)
 
     # Упаковываем картинку в Base64 для передачи в JSON
     img_io = io.BytesIO()
@@ -35,11 +35,8 @@ async def estimate_age(file: UploadFile = File(...)):
     
     return {
         "face_image": img_data_url,
-        "age_mean": round(mean_age, 2),
-        "age_std": round(std_age, 2)
+        "age_mean": round(age_info["expected_age"], 2),
+        "age_std": round(age_info["std"], 2),
+        "confidence_adult": round(age_info["confidence_adult"], 2),
+        "purchase_allowed": age_info["purchase_allowed"]
     }
-
-
-@app.get("/hello")
-def get_hello():
-    return {"message": "Hello World from FastAPI"}
