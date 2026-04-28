@@ -3,16 +3,17 @@ import './ProductsList.css'
 
 // Моковые данные для демонстрации
 const mockProducts = [
-  { id: 1, name: 'Донот Манго глазиров.', weight: '67 г', icon: '🍩' },
-  { id: 2, name: 'Донот ягодный', weight: '65 г', icon: '🍩' },
-  { id: 3, name: 'Донот шоколадный', weight: '65 г', icon: '🍩' },
-  { id: 4, name: 'Роллини греческие', weight: '100 г', icon: '🥐' },
-  { id: 5, name: 'Самса с говядиной', weight: '90 г', icon: '🥟' },
-  { id: 6, name: 'Самса с курицей', weight: '100 г', icon: '🥟' },
-  { id: 7, name: 'Хачапури с сыром', weight: '120 г', icon: '🧀' },
-  { id: 8, name: 'Сосиска в тесте', weight: '100 г', icon: '🌭' },
-  { id: 9, name: 'Хлеб Пшеничный', weight: '500 г', icon: '🍞' },
-]
+  { id: 1, name: 'Сигареты', volume: '', image: '/cigarettes1.jpg' },
+  { id: 2, name: 'Сигареты', volume: '', image: '/cigarettes2.png' },
+  { id: 3, name: 'Энергетик', volume: '0.5 л', image: '/energy.jpg' },
+  { id: 4, name: 'Пиво', volume: '0.5 л', image: '/beer.jpg' },
+  { id: 5, name: 'Водка', volume: '0.5 л', image: '/vodka.jpg' },
+  { id: 6, name: 'Виски', volume: '0.7 л', image: '/whiskey.jpg' },
+  { id: 7, name: 'Вино', volume: '0.75 л', image: '/wine.jpg' },
+  { id: 8, name: 'Ром', volume: '0.7 л', image: '/rum.jpg' },
+  { id: 9, name: 'Сидр', volume: '0.45 л', image: '/cider.jpg' },
+  { id: 10, name: 'Коньянк', volume: '0.5 л', image: '/cognac.jpg' },
+];
 
 const ProductsList = ({ onSelectionChange }) => {
   const [selectedIds, setSelectedIds] = useState([])
@@ -40,9 +41,17 @@ const ProductsList = ({ onSelectionChange }) => {
             className={`product-card ${selectedIds.includes(prod.id) ? 'selected' : ''}`}
             onClick={() => toggleProduct(prod.id)}
           >
-            <div className="product-icon">{prod.icon}</div>
-            <div className="product-name">{prod.name}</div>
-            <div className="product-weight">{prod.weight}</div>
+            <div className="product-image-container">
+              <img 
+                src={prod.image} 
+                alt={prod.name} 
+                className="product-main-image"
+              />
+            </div>
+            <div className="product-info">
+              <div className="product-name">{prod.name}</div>
+              {prod.volume && <div className="product-volume">{prod.volume}</div>}
+            </div>
           </div>
         ))}
       </div>

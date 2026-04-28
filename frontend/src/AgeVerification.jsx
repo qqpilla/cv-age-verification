@@ -67,7 +67,7 @@ function AgeVerification({ onComplete }) {
       {faceImage && ageInfo && (
         <div className="result-container-centered">
           <div className={`result-card ${ageInfo.purchase_allowed ? 'status-allowed' : 'status-denied'}`}>
-            <h3>Результат анализа:</h3>
+            <h3>{ageInfo.purchase_allowed ? "Покупка разрешена" : "Покупка запрещена"}</h3>
             <img 
               className="result-face-img"
               src={faceImage} 
@@ -76,7 +76,7 @@ function AgeVerification({ onComplete }) {
             <div className="result-age-text">
               <p>
                 {ageInfo.mean} ± {ageInfo.std} лет<br />
-                Уверенность в совершеннолетии: {(ageInfo.confidence * 100)}% 
+                Уверенность в совершеннолетии: {Math.trunc(ageInfo.confidence * 100)}% 
               </p>
             </div>
             
