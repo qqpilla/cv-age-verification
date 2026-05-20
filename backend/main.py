@@ -38,5 +38,5 @@ async def estimate_age(file: UploadFile = File(...)):
         "age_mean": round(age_info["expected_age"], 2),
         "age_std": round(age_info["std"], 2),
         "confidence_adult": round(age_info["confidence_adult"], 2),
-        "purchase_allowed": age_info["purchase_allowed"]
+        "purchase_allowed": age_info["is_adult"]
     }
