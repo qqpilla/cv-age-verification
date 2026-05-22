@@ -75,7 +75,6 @@ function AgeVerification({ onComplete }) {
             />
             <div className="result-age-text">
               <p>
-                {ageInfo.mean} ± {ageInfo.std} лет<br />
                 Уверенность в совершеннолетии: {Math.trunc(ageInfo.confidence * 100)}% 
               </p>
             </div>
